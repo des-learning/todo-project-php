@@ -48,14 +48,13 @@ class Server
   {
     $uri = $_SERVER['REQUEST_URI'];
     $method = $_SERVER['REQUEST_METHOD'];
+    $request = new Request($uri, $method, $_REQUEST, $_GET, $_COOKIE);
 
     // cari handler/controller untuk path yang di-request
-    $handler = $this->router->getHandlerFor($uri, $method);
+    $handler = $this->router->getHandlerFor($request);
     if ($handler) {
       // handler ditemukan, karena handler adalah sebuah callable, kita
       // dapat memanggil variable $handler seperti memanggil fungsi
-
-      $request = new Request($_REQUEST, $_GET, $_COOKIE);
       if ($handler instanceof BaseController) {
         $handler->handle($request);
       } else {

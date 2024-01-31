@@ -29,7 +29,10 @@ $router->get('/', function($request) {
   echo "Hello Todo";
 });
 
-$router->post('/hello', new HelloController);
+// contoh menggunakan controller untuk request post dan request get
+$helloController = new HelloController;
+$router->get('/hello', $helloController);
+$router->post('/hello', $helloController);
 
 // jalankan logic untuk menerima request dan memanggil handler
 // yang tepat sesuai router di-atas

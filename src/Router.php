@@ -57,9 +57,10 @@ class Router
   // dengan menambahkan modifier ? di depan artinya bisa saja callable tidak ditemukan
   // dan dikembalikan nilai null
   // konsep disebut dengan nullable type (https://en.wikipedia.org/wiki/Nullable_type)
-  public function getHandlerFor(string $uri, string $method): callable|BaseController|null
+  public function getHandlerFor(Request $request): callable|BaseController|null
   {
-    $path = $this->requestURIPath($uri);
+    $path = $this->requestURIPath($request->getUri());
+    $method = $request->getMethod();
 
     if ($method === 'GET') {
       // ?? Null Coalescing Operator, nilai fallback apabila ekspresi disebelah kiri bernilai null
