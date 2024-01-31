@@ -1,5 +1,18 @@
 # Membangun aplikasi Web menggunakan MVC
 
+## Cara menjalankan
+
+Jika menggunakan XAMPP/Apache:
+
+- Clone repository di `DocumentRoot/todo` (biasanya di `c:\xampp\htdocs` kalau di windows).
+- Pastikan apache server telah menyala dan kunjungi melalui browser ke `http://localhost/todo`
+
+Menggunan web server _built-in_ PHP (`php -S`):
+
+- Clone repository ini
+- Jalankan perintah `php -S 127.0.0.1:8080` untuk menghidupkan web server PHP yang
+  diakses di `http://localhost:8080` (sesuaikan IP dan port number jika dibutuhkan)
+
 ## MVC
 
 [Model View Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
