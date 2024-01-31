@@ -7,6 +7,7 @@ namespace Uph22si1Web\Todo;
 
 // import menggunakan namespace
 use Throwable;
+use Uph22si1Web\Todo\Controllers\BaseController;
 use Uph22si1Web\Todo\Exceptions\NotFoundException;
 
 // definisi class
@@ -53,7 +54,13 @@ class Server
     if ($handler) {
       // handler ditemukan, karena handler adalah sebuah callable, kita
       // dapat memanggil variable $handler seperti memanggil fungsi
-      $handler($_REQUEST);
+
+      $request = new Request($_REQUEST, $_GET, $_COOKIE);
+      if ($handler instanceof BaseController) {
+        $handler->handle($request);
+      } else {
+        $handler($request);
+      }
       return;
     }
 

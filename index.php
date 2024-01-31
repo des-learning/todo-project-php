@@ -4,6 +4,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 // mengimport class dari namespace
+use Uph22si1Web\Todo\Controllers\HelloController;
 use Uph22si1Web\Todo\Router;
 use Uph22si1Web\Todo\Server;
 
@@ -24,10 +25,11 @@ $server = new Server($router);
 // PHP mengdukung dua cara penulisan callable:
 // 1. anonymous function/closure https://www.php.net/manual/en/functions.anonymous.php
 // 2. arrow function https://www.php.net/manual/en/functions.arrow.php
-$router->get('/', function(array $request) {
-  $nama = $request['nama'] ?? 'World';
-  echo "Hello $nama";
+$router->get('/', function($request) {
+  echo "Hello Todo";
 });
+
+$router->post('/hello', new HelloController);
 
 // jalankan logic untuk menerima request dan memanggil handler
 // yang tepat sesuai router di-atas

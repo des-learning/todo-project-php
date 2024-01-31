@@ -2,6 +2,9 @@
 
 namespace Uph22si1Web\Todo;
 
+use Uph22si1Web\Todo\Controllers\BaseController;
+
+
 // Class router berfungsi sebagai API bagi developer
 // untuk mendaftarkan mapping antara alamat URL request dengan handler
 class Router
@@ -33,7 +36,7 @@ class Router
     * @return void
     * @param callable(): mixed $handler
     */
-  public function get(string $path, callable $handler): void
+  public function get(string $path, callable|BaseController $handler): void
   {
     $this->getHandlers[$this->normalizedPath($path)] = $handler;
   }
@@ -43,7 +46,7 @@ class Router
     * @return void
     * @param callable(): mixed $handler
     */
-  public function post(string $path, callable $handler): void
+  public function post(string $path, callable|BaseController $handler): void
   {
     $this->postHandlers[$this->normalizedPath($path)] = $handler;
   }
@@ -54,7 +57,7 @@ class Router
   // dengan menambahkan modifier ? di depan artinya bisa saja callable tidak ditemukan
   // dan dikembalikan nilai null
   // konsep disebut dengan nullable type (https://en.wikipedia.org/wiki/Nullable_type)
-  public function getHandlerFor(string $uri, string $method): ?callable
+  public function getHandlerFor(string $uri, string $method): callable|BaseController|null
   {
     $path = $this->requestURIPath($uri);
 
