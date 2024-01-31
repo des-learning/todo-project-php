@@ -34,6 +34,7 @@ class Server
       }
 
       // default handler exception handler
+      error_log("Unhandled Exception: {$exception->getMessage()}\n{$exception->getTraceAsString()}");
       http_response_code(500);
       echo "Internal Server Error";
     });
