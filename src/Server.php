@@ -13,19 +13,20 @@ use Uph22si1Web\Todo\Exceptions\NotFoundException;
 class Server
 {
   // property private
-  private string $base;
+  private Router $router;
 
   // constructor
-  function __construct(string $base)
+  function __construct(Router $router)
   {
-    // operator -> digunakan untuk mengakses property/method dari class instance/variable/object
-    $this->base = $base;
+    $this->router = $router;
 
     // register exception handler untuk menangani exception yang belum dihandle
     // tujuannya supaya aplikasi web memiliki default handler apabila ada code
     // yang lupa menghandle exception yang terjadi
     set_exception_handler(function(Throwable $exception) {
       // handle exception apabila resource yang direquest tidak ditemukan
+      // kita dapat memanfaatkan sistem exception PHP untuk menghandle situasi khusus
+      // seperti 404 not found, handler/controller cukup meng-throw exception NotFoundException
       if ($exception instanceof NotFoundException) {
         http_response_code(404);
         echo "Not Found";
@@ -43,10 +44,11 @@ class Server
   // yang terdaftar di router
   function serve(): void
   {
-    $request_path = $this->normalized_request_path($_SERVER['REQUEST_URI']);
+    $uri = $_SERVER['REQUEST_URI'];
     $method = $_SERVER['REQUEST_METHOD'];
 
-    $handler = Router::getHandlerFor($request_path, $method);
+    // cari handler/controller untuk path yang di-request
+    $handler = $this->router->getHandlerFor($uri, $method);
     if ($handler) {
       // handler ditemukan, karena handler adalah sebuah callable, kita
       // dapat memanggil variable $handler seperti memanggil fungsi
@@ -56,16 +58,5 @@ class Server
 
     // jika handler tidak ditemukan throw exception not found
     throw new NotFoundException();
-  }
-
-  private function normalized_request_path(string $uri): string
-  {
-    $request_path = strtok($uri, '?');
-
-    if (substr($request_path, 0, strlen($this->base)) == $this->base) {
-      $request_path = substr($request_path, strlen($this->base));
-    }
-
-    return $request_path;
   }
 }

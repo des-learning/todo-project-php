@@ -7,9 +7,13 @@ require __DIR__ . '/vendor/autoload.php';
 use Uph22si1Web\Todo\Router;
 use Uph22si1Web\Todo\Server;
 
+// buat instance router baru, mount ke path '/todo'
+$router = new Router('/todo');
+
 // buat instance server baru untuk menghandle request http
 // baca source-nya di src/Server.php
-$server = new Server('/todo');
+// inject instance $router ke server
+$server = new Server($router);
 
 // daftarkan sebuah router untuk menghandle request
 // baca source-nya di src/Router.php
@@ -20,7 +24,7 @@ $server = new Server('/todo');
 // PHP mengdukung dua cara penulisan callable:
 // 1. anonymous function/closure https://www.php.net/manual/en/functions.anonymous.php
 // 2. arrow function https://www.php.net/manual/en/functions.arrow.php
-Router::get('/', function(array $request) {
+$router->get('/', function(array $request) {
   $nama = $request['nama'] ?? 'World';
   echo "Hello $nama";
 });

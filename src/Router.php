@@ -6,10 +6,21 @@ namespace Uph22si1Web\Todo;
 // untuk mendaftarkan mapping antara alamat URL request dengan handler
 class Router
 {
-  // kata kunci static menyatakan bahwa property ini merupakan property class bukan object
-  // property atau method class (static) diakses menggunakan operator :: (object menggunakan operator ->)
-  private static array $getHandlers = [];
-  private static array $postHandlers = [];
+  // property object
+  private string $base;
+  private array $getHandlers;
+  private array $postHandlers;
+
+  function __construct(string $base) {
+    $this->base = $base;
+
+    $this->getHandlers = [];
+    $this->postHandlers = [];
+  }
+
+  public function getBase(): string {
+    return $this->base;
+  }
 
   // Request get
   // callable (https://www.php.net/manual/en/language.types.callable.php) adalah type yang
@@ -22,9 +33,9 @@ class Router
     * @return void
     * @param callable(): mixed $handler
     */
-  static function get(string $path, callable $handler): void
+  public function get(string $path, callable $handler): void
   {
-    self::$getHandlers[$path] = $handler;
+    $this->getHandlers[$this->normalizedPath($path)] = $handler;
   }
 
   // Request post
@@ -32,9 +43,9 @@ class Router
     * @return void
     * @param callable(): mixed $handler
     */
-  static function post(string $path, callable $handler): void
+  public function post(string $path, callable $handler): void
   {
-    self::$postHandlers[$path] = $handler;
+    $this->postHandlers[$this->normalizedPath($path)] = $handler;
   }
 
   // kembalikan handler sesuai dengan path dan method yang diinginkan
@@ -42,18 +53,51 @@ class Router
   // method ini mengembalikan object callable (fungsi yang dapat dipanggil/dijalankan)
   // dengan menambahkan modifier ? di depan artinya bisa saja callable tidak ditemukan
   // dan dikembalikan nilai null
-  // contruct ini disebut juga dengan nullable type (https://en.wikipedia.org/wiki/Nullable_type)
-  static function getHandlerFor(string $path, string $method): ?callable
+  // konsep disebut dengan nullable type (https://en.wikipedia.org/wiki/Nullable_type)
+  public function getHandlerFor(string $uri, string $method): ?callable
   {
+    $path = $this->requestURIPath($uri);
+
     if ($method === 'GET') {
       // ?? Null Coalescing Operator, nilai fallback apabila ekspresi disebelah kiri bernilai null
-      return self::$getHandlers[$path] ?? null;
+      return $this->getHandlers[$path] ?? null;
     }
 
     if ($method === 'POST') {
-      return self::$postHandlers[$path] ?? null;
+      return $this->postHandlers[$path] ?? null;
     }
 
     return null;
+  }
+
+  // normalisasi path yang akan di register.
+  // misalnya router dikonfigurasikan dengan base path '/todo'
+  // ketika user meng-register path '' maka yang diregister ke list path adalah `/todo`
+  // jika yang diregister adalah '/show' maka yang diregister adalah '/todo/show'
+  private function normalizedPath(string $path): string {
+    // ternary operator untuk menentukan apakah path delimiter perlu ditambahkan atau tidak
+    $pathDelimiter = str_starts_with($path, '/') || str_ends_with($this->base, '/') ? '' : '/';
+
+    $fullPath = $this->stripSlashInTheEndOfPath($this->base . $pathDelimiter . $path);
+
+    return $fullPath;
+  }
+
+  // kembalikan path tanpa query parameter
+  // e.g. /todo?nama=budi menjadi /todo
+  private function requestURIPath(string $uri): string {
+    $requestPath = $this->stripSlashInTheEndOfPath(strtok($uri, '?'));
+
+    return $requestPath;
+  }
+
+  // Hilangkan / diakhir path jika ada
+  // e.g. /todo/ menjadi /todo
+  private function stripSlashInTheEndOfPath(string $path): string {
+    if (str_ends_with($path, '/')) {
+      return substr($path, 0, strlen($path)-1);
+    }
+
+    return $path;
   }
 }
