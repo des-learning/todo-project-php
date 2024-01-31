@@ -3,6 +3,7 @@
 namespace Uph22si1Web\Todo\Controllers;
 
 use Uph22si1Web\Todo\Request;
+use Uph22si1Web\Todo\View;
 
 // HelloController mengimplementasikan BaseController
 class HelloController implements BaseController {
@@ -11,6 +12,10 @@ class HelloController implements BaseController {
     // melalui object request
     $name = $request->input('name') ?? 'World';
 
-    echo "Hello $name";
+    // render output menggunakan template/view
+    View::render('hello', [
+      'title' => 'Todo Hello View Example',
+      'name' => $name,
+    ]);
   }
 }
