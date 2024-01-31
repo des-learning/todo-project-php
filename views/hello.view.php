@@ -1,6 +1,5 @@
 <html>
   <head>
-    <!-- tag <?= ... ?> sama dengan perintah <?php echo ... ?> -->
     <title><?= $title ?></title>
   </head>
   <body>
