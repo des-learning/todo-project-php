@@ -18,8 +18,15 @@ class View {
     // anonymous function supaya tidak ada data yang tidak diinginkan bocor
     // ke template yang akan di render
     (function() use($templateFile, $data) {
+      // https://www.php.net/manual/en/function.htmlspecialchars.php untuk men-sanitasi
+      // data yang akan di-render ke HTML
+      // https://www.php.net/manual/en/function.array-map.php digunakan untuk meng-apply
+      // function ke setiap item di dalam array, fungsi ini menerima callable/anonymous function
+      // dan array yang akan dioperasikan
+      // fn() => ... arrow function di PHP untuk menuliskan anonymous function/callable
+      $escaped_data = array_map(fn($i) => htmlspecialchars($i), $data);
       // https://www.php.net/manual/en/function.extract.php
-      extract ($data);
+      extract($escaped_data);
 
       // https://www.php.net/manual/en/function.include.php
       // WARNING: karena kita langsung menginclude dan mengevaluasi file template

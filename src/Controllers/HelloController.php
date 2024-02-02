@@ -16,6 +16,7 @@ class HelloController implements BaseController {
     View::render('hello', [
       'title' => 'Todo Hello View Example',
       'name' => $name,
+      'xss' => '<script>alert("hello");</script>', // XSS: inject script Javascript di HTML untuk dieksekusi oleh browser
     ]);
   }
 }
