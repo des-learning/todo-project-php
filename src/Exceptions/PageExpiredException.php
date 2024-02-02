@@ -2,7 +2,7 @@
 
 namespace Uph22si1Web\Todo\Exceptions;
 
-class TemplateNotFoundException extends \Exception
+class PageExpiredException extends \Exception
 {
   function __construct($message = '', $code = 0, \Throwable $previous = null)
   {

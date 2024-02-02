@@ -9,6 +9,7 @@ namespace Uph22si1Web\Todo;
 use Throwable;
 use Uph22si1Web\Todo\Controllers\BaseController;
 use Uph22si1Web\Todo\Exceptions\NotFoundException;
+use Uph22si1Web\Todo\Exceptions\PageExpiredException;
 
 // definisi class
 class Server
@@ -34,6 +35,12 @@ class Server
         return;
       }
 
+      if ($exception instanceof PageExpiredException) {
+        http_response_code(419);
+        echo "Page Expired";
+        return;
+      }
+
       // default handler exception handler
       error_log("Unhandled Exception: {$exception->getMessage()}\n{$exception->getTraceAsString()}");
       http_response_code(500);
@@ -50,6 +57,8 @@ class Server
     $method = $_SERVER['REQUEST_METHOD'];
     $request = new Request($uri, $method, $_REQUEST, $_GET, $_COOKIE);
 
+    $this->validate_csrf_token($request);
+
     // cari handler/controller untuk path yang di-request
     $handler = $this->router->getHandlerFor($request);
     if ($handler) {
@@ -65,5 +74,20 @@ class Server
 
     // jika handler tidak ditemukan throw exception not found
     throw new NotFoundException();
+  }
+
+  private function validate_csrf_token(Request $request): void {
+    if ($request->getMethod() != 'POST') {
+      return;
+    }
+
+    $token = $request->input('csrf_token');
+    if (is_null($token)) {
+      throw new PageExpiredException;
+    }
+
+    if ($token !== $_SESSION['CSRF_TOKEN']) {
+      throw new PageExpiredException;
+    }
   }
 }

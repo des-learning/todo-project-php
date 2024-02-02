@@ -1,10 +1,23 @@
 <?php
+function csrf_token() {
+  if (!isset($_SESSION['CSRF_TOKEN'])) {
+    // https://www.php.net/manual/en/function.sha1.php
+    // https://www.php.net/manual/en/function.rand.php
+    $_SESSION['CSRF_TOKEN'] = sha1(rand());
+  }
+
+  return $_SESSION['CSRF_TOKEN'];
+}
+
+session_start();
+csrf_token();
 
 // Lakukan autoload  PSR-4
 require __DIR__ . '/vendor/autoload.php';
 
 // mengimport class dari namespace
 use Uph22si1Web\Todo\Controllers\HelloController;
+use Uph22si1Web\Todo\Controllers\HelloFormController;
 use Uph22si1Web\Todo\Router;
 use Uph22si1Web\Todo\Server;
 
@@ -33,6 +46,7 @@ $router->get('/', function($request) {
 $helloController = new HelloController;
 $router->get('/hello', $helloController);
 $router->post('/hello', $helloController);
+$router->get('/hello-form', new HelloFormController);
 
 // jalankan logic untuk menerima request dan memanggil handler
 // yang tepat sesuai router di-atas
