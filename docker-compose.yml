@@ -7,3 +7,13 @@ services:
       - 8081:80
     volumes:
       - ./:/var/www/html/todo
+  db:
+    image: mysql:8
+    platform: linux/x86_64
+    ports:
+      - 3306:3306
+    volumes:
+      - ./database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=web
+      - MYSQL_ROOT_PASSWORD=root
