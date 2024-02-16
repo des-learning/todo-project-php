@@ -7,9 +7,13 @@ use Uph22si1Web\Todo\Request;
 use Uph22si1Web\Todo\View;
 
 class TodoController {
+  // dependency injection
+  function __construct(protected Todo $todoModel) {}
+
   function index(Request $request)
   {
-    echo "list todo";
+    $todos = $this->todoModel->all();
+    View::render('todo/index', ['todos' => $todos]);
   }
 
   function show(Request $request, $id)

@@ -14,11 +14,20 @@ csrf_token();
 
 // Lakukan autoload  PSR-4
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config/db.php';
+
+function getDBConnection()
+{
+  global $DB;
+  return new PDO("mysql:host={$DB['HOSTNAME']}:{$DB['PORT']};dbname={$DB['NAME']}",
+    $DB['USERNAME'], $DB['PASSWORD']);
+}
 
 // mengimport class dari namespace
 use Uph22si1Web\Todo\Controllers\HelloController;
 use Uph22si1Web\Todo\Controllers\HelloFormController;
 use Uph22si1Web\Todo\Controllers\TodoController;
+use Uph22si1Web\Todo\Models\Todo;
 use Uph22si1Web\Todo\Router;
 use Uph22si1Web\Todo\Server;
 
@@ -49,7 +58,10 @@ $router->get('/hello', $helloController);
 $router->post('/hello', $helloController);
 $router->get('/hello-form', new HelloFormController); */
 
-$todoController = new TodoController;
+$db = getDBConnection();
+$todoModel = new Todo($db);
+
+$todoController = new TodoController($todoModel);
 $router->get('/', [$todoController, 'index']);
 $router->get('/new', [$todoController, 'new']);
 $router->get('/(.+)/edit', [$todoController, 'edit']);

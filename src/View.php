@@ -23,7 +23,8 @@ class View {
       // https://www.php.net/manual/en/function.array-map.php digunakan untuk meng-apply
       // function ke setiap item di dalam array, fungsi ini menerima callable/anonymous function
       // dan array yang akan dioperasikan
-      $escaped_data = array_map(fn($i) => htmlspecialchars($i), $data);
+      // TODO: perlu di-refactor untuk escape data jika bukan string
+      $escaped_data = array_map(fn($i) => is_string($i) ? htmlspecialchars($i) : $i, $data);
 
       // https://www.php.net/manual/en/function.extract.php
       extract($escaped_data);
