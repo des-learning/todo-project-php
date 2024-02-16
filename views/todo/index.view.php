@@ -3,9 +3,9 @@
     <h1>List Todo</h1>
 
     <ul>
-    <? foreach ($todos as $todo) { ?>
+    <?php foreach ($todos as $todo) { ?>
       <li><?= $todo['title'] ?></li>
-    <? } ?>
+    <?php } ?>
     </ul>
   </body>
 </html>
