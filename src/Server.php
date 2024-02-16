@@ -60,15 +60,13 @@ class Server
     $this->validate_csrf_token($request);
 
     // cari handler/controller untuk path yang di-request
-    $handler = $this->router->getHandlerFor($request);
-    if ($handler) {
-      // handler ditemukan, karena handler adalah sebuah callable, kita
-      // dapat memanggil variable $handler seperti memanggil fungsi
-      if ($handler instanceof BaseController) {
-        $handler->handle($request);
-      } else {
-        $handler($request);
-      }
+    $route = $this->router->getHandlerFor($request);
+    if ($route) {
+      // NOTE: kita memanggil handler yang ditemukan dengan meng-passing object
+      // $request beserta $matches dari regex match routing parameter
+      // operator ... (array unpacking) meng-extract item array menjadi
+      // variable yang akan dikirimkan secara positional ke handler
+      $route['handler']($request, ...$route['matches']);
       return;
     }
 

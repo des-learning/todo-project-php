@@ -57,18 +57,25 @@ class Router
   // dengan menambahkan modifier ? di depan artinya bisa saja callable tidak ditemukan
   // dan dikembalikan nilai null
   // konsep disebut dengan nullable type (https://en.wikipedia.org/wiki/Nullable_type)
-  public function getHandlerFor(Request $request): callable|BaseController|null
+  public function getHandlerFor(Request $request): array|null
   {
     $path = $this->requestURIPath($request->getUri());
     $method = $request->getMethod();
 
-    if ($method === 'GET') {
-      // ?? Null Coalescing Operator, nilai fallback apabila ekspresi disebelah kiri bernilai null
-      return $this->getHandlers[$path] ?? null;
+    $handlers = ['GET' => $this->getHandlers, 'POST' => $this->postHandlers][$method];
+    // NOTE: kita hanya handling method GET dan POST sekarang
+    if (!$handlers) {
+      return null;
     }
 
-    if ($method === 'POST') {
-      return $this->postHandlers[$path] ?? null;
+    // NOTE: cari path sesuai dengan regex pattern
+    // https://en.wikipedia.org/wiki/Regular_expression
+    foreach ($handlers as $pattern => $handler) {
+      $matches = [];
+      $matched = preg_match("/^{$pattern}$/", $path, $matches);
+      if ($matched) {
+        return ['handler' => $handler, 'matches' => array_slice($matches, 1)];
+      }
     }
 
     return null;
@@ -84,7 +91,8 @@ class Router
 
     $fullPath = $this->stripSlashInTheEndOfPath($this->base . $pathDelimiter . $path);
 
-    return $fullPath;
+    // NOTE: escape / karena akan digunakan pada regex matching
+    return str_replace('/', '\/', $fullPath);
   }
 
   // kembalikan path tanpa query parameter
